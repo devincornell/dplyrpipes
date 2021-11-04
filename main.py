@@ -3,75 +3,31 @@ from typing import Callable, Any, Union, List
 import functools
 
 import dataclasses
-
-
-############################### Component Classes ###############################
-
-class CompFunc:
-    def __init__(self, func, *args, **kwargs):
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-        self.other_compfuncs = list()
-
-    @property
-    def is_null(self):
-        return self.func is None
-
-    def __call__(self, data: Any) -> Any:
-        '''Call self.func on the data.
-        '''
-        return self.func(data, *self.args, **self.kwargs)
-
-    def execute_all(self, compdata, inplace: bool = False):
-        '''Execute all functions on the input data sequentially.
-        '''
-        all_compfuncs = [self] + self.other_compfuncs
-
-        x = compdata.data
-        for compfunc in all_compfuncs:
-            if not compfunc.is_null:
-                x = compfunc(x)
-            else:
-                return x
-
-        if inplace:
-            compdata.data = x
-            return compdata
-        else:
-            return compdata.__class__(x)
-
-    def __rshift__(self, other_compfunc):
-        '''Aggregate component functions.
-        '''
-        self.other_compfuncs.append(other_compfunc)
-        return self
-    
-    def __repr__(self):
-        argstr = ", ".join(map(str,self.args))
-        kwargstr = ", ".join(f'{k}={v}' for k,v in self.kwargs.items())
-        return f'{self.__class__.__name__}({self.func}, {argstr}, {kwargstr})'
-
-class out(CompFunc):
-    '''Used at the end of a pipeline to output data.'''
-    def __init__(self):
-        super().__init__(func=None)
-    def __rshift__(self, other_compfunc):
-        raise ValueError('Cannot pipe data after the out().')
+class out:
+    pass
 
 @dataclasses.dataclass
 class CompData:
     '''Store data and overload operator to apply component functions.'''
     data: Any
 
-    def __rshift__(self, compfunc):
-        return compfunc.execute_all(self)
+    def __rshift__(self, func: Callable):
+        '''Apply a callable on the right to the data.
+        '''
+        if isinstance(func, out):
+            return self.data
+
+        if hasattr(func, 'argdata') and hasattr(func, 'kwargdata'):
+            return self.__class__(func(self.data, *func.argdata, **func.kwargdata))
+        else:
+            return self.__class__(func(self.data))
 
 def comp_decorator(func):
     def wrapper_comp_decorator(*args, **kwargs):
-        return CompFunc(func, *args, **kwargs)
+        func.argdata = args
+        func.kwargdata = kwargs
+        return func
     return wrapper_comp_decorator
-
 
 ###################### dplyr equivalent overloads ####################
 
@@ -103,6 +59,10 @@ def summary(df, *args, **kwargs):
 def passthrough(x):
     return x
 
+
+def regularfunc(df):
+    return df['name']
+
 if __name__ == '__main__':
     import pandas as pd
     df = pd.DataFrame([
@@ -113,12 +73,22 @@ if __name__ == '__main__':
         {'name': 'Hong', 'age': 50},
     ])
 
-    data = CompData(df) >> (
+    df = (CompData(df) >> 
         mutate(birthyear = 2021-df['age']) >>
         filter('age >= 10') >>
         select('name', 'birthyear') >>
         rename({'birthyear': 'birth_year'}) >>
+        (lambda x: x['name']) >>
         out()
     )
-    print(data)
+    print(df)
+
+    mylist = list(range(100))
+
+    summed = (CompData(mylist) >>
+        (lambda l: list(map(lambda x: x * 2, l))) >>
+        sum >>
+        out()
+    )
+    print(summed)
 
