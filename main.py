@@ -55,14 +55,6 @@ def mutate(df, *args, **kwargs):
 def summary(df, *args, **kwargs):
     return df.describe(*args, **kwargs)
 
-@comp_decorator
-def passthrough(x):
-    return x
-
-
-def regularfunc(df):
-    return df['name']
-
 if __name__ == '__main__':
     import pandas as pd
     df = pd.DataFrame([
@@ -83,11 +75,13 @@ if __name__ == '__main__':
     )
     print(df)
 
+    import functools
+    import statistics
     mylist = list(range(100))
-
     summed = (CompData(mylist) >>
         (lambda l: list(map(lambda x: x * 2, l))) >>
-        sum >>
+        functools.partial(sorted, reverse=True) >>
+        statistics.median >>
         out()
     )
     print(summed)
