@@ -108,8 +108,8 @@ if __name__ == '__main__':
     df = pd.DataFrame([
         {'name': 'Karl', 'age': 7}, 
         {'name': 'Sandra', 'age': 10}, 
-        {'name': 'Chris', 'age': 20},
-        {'name': 'Andreas', 'age': 35},
+        {'name': 'Chris', 'age': 12},
+        {'name': 'Andreas', 'age': 12},
         {'name': 'Hong', 'age': 50},
     ])
 
