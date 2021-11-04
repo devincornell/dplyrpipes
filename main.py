@@ -4,6 +4,9 @@ import functools
 
 import dataclasses
 
+
+############################### Component Classes ###############################
+
 class CompFunc:
     def __init__(self, func, *args, **kwargs):
         self.func = func
@@ -78,7 +81,7 @@ def filter(df, *args, **kwargs):
 
 @comp_decorator
 def select(df, *colnames):
-    return df[colnames]
+    return df[list(colnames)]
 
 @comp_decorator
 def arrange(df, *colnames, **kwargs):
@@ -105,12 +108,16 @@ if __name__ == '__main__':
     df = pd.DataFrame([
         {'name': 'Karl', 'age': 7}, 
         {'name': 'Sandra', 'age': 10}, 
-        {'name': 'Chris', 'age': 12}
+        {'name': 'Chris', 'age': 12},
+        {'name': 'Andreas', 'age': 12},
+        {'name': 'Hong', 'age': 50},
     ])
 
     data = CompData(df) >> (
-        #mutate(birthyear = 2021-df['age']) >>
-        passthrough() >>
+        mutate(birthyear = 2021-df['age']) >>
+        filter('age >= 10') >>
+        select('name', 'birthyear') >>
+        rename({'birthyear': 'birth_year'}) >>
         out()
     )
     print(data)
