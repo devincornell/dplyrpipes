@@ -1,13 +1,13 @@
 
 import dataclasses
-from typing import Callable
+from typing import Callable, Any
 
 
 class out:
     pass
 
 @dataclasses.dataclass
-class CompData:
+class InputData:
     '''Store data and overload operator to apply component functions.'''
     data: Any
 
