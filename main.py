@@ -4,10 +4,11 @@ import functools
 
 import dataclasses
 
+import pandas as pd
 
 
 if __name__ == '__main__':
-    import pandas as pd
+    
     df = pd.DataFrame([
         {'name': 'Karl', 'age': 7}, 
         {'name': 'Sandra', 'age': 10}, 
@@ -21,7 +22,7 @@ if __name__ == '__main__':
         filter('age >= 10') >>
         select_df('name', 'birthyear') >>
         rename_df({'birthyear': 'birth_year'}) >>
-        comp_decorator((lambda df,y: df['birth_year'] + 1 + y))(2) >>
+        component((lambda df,y: df['birth_year'] + 1 + y))(2) >>
         out()
     )
     print(df)

@@ -1,10 +1,10 @@
 
 
 
-def comp_decorator(func):
-    def wrapper_comp_decorator(*args, **kwargs):
+def component(func):
+    def wrapper_component(*args, **kwargs):
         func.argdata = args
         func.kwargdata = kwargs
         return func
-    return wrapper_comp_decorator
+    return wrapper_component
 
