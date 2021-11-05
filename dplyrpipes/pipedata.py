@@ -4,6 +4,7 @@ from typing import Callable, Any
 
 
 class out:
+    '''Ends the pipeline by returning the .data property of InputData.'''
     pass
 
 @dataclasses.dataclass

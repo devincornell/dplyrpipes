@@ -2,10 +2,9 @@
 import functools
 import pandas as pd
 import functools
-import itertools
 import statistics
 
-import dplyrpipes
+from dplyrpipes import InputData, mutate_df, filter_df, rename_df, select_df, out
 
 if __name__ == '__main__':
     
@@ -17,24 +16,24 @@ if __name__ == '__main__':
         {'name': 'Hong', 'age': 50},
     ])
 
-    df = (dplyrpipes.InputData(example_df) >> 
-        dplyrpipes.mutate_df(birthyear = 2021-example_df['age']) >>
-        dplyrpipes.filter_df('age >= 10') >>
-        dplyrpipes.select_df('name', 'birthyear') >>
-        dplyrpipes.rename_df({'birthyear': 'birth_year'}) >>
-        dplyrpipes.component((lambda df,y: df['birth_year'] + 1 + y))(2) >>
-        dplyrpipes.out()
+    # this shows some built-in methods that emulate behavior of dplyr methods
+    df = (InputData(example_df) >> 
+        mutate_df(birthyear = 2021-example_df['age']) >>
+        filter_df('age >= 10') >>
+        select_df('name', 'birthyear') >>
+        rename_df({'birthyear': 'birth_year'}) >>
+        out()
     )
     print(df)
 
-    
+    # this shows the pipes applied to normal functions
     mylist = list(range(100))
     summed = (dplyrpipes.InputData(mylist) >>
         (lambda l: list(map(lambda x: x * 2, l))) >>
         functools.partial(sorted, reverse=True) >>
-        functools.partial(itertools.filter) >>
+        functools.partial(filter, lambda x: x > 10) >>
         statistics.median >>
-        dplyrpipes.out()
+        out()
     )
     print(summed)
 
