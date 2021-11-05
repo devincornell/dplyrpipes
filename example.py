@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     # this shows the pipes applied to normal functions
     mylist = list(range(100))
-    summed = (dplyrpipes.InputData(mylist) >>
+    summed = (InputData(mylist) >>
         (lambda l: list(map(lambda x: x * 2, l))) >>
         functools.partial(sorted, reverse=True) >>
         functools.partial(filter, lambda x: x > 10) >>
