@@ -1,5 +1,5 @@
 
-
+import functools
 
 def component(func):
     def wrapper_component(*args, **kwargs):
@@ -7,4 +7,3 @@ def component(func):
         func.kwargdata = kwargs
         return func
     return wrapper_component
-

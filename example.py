@@ -7,6 +7,21 @@ import statistics
 from dplyrpipes import InputData, mutate_df, filter_df, rename_df, select_df, out
 
 if __name__ == '__main__':
+
+    result = (InputData(1) >> 
+        (lambda x: x + 1) >> 
+        out()
+    )
+    print(result)
+
+    mylist = list(range(3))
+    result = (InputData(mylist) >> 
+        (lambda l: l + [4]) >> 
+        functools.partial(filter, lambda x: x >= 2) >>
+        sum >>
+        out()
+    )
+    print(result)
     
     example_df = pd.DataFrame([
         {'name': 'Karl', 'age': 7}, 
