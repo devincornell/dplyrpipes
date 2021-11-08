@@ -45,7 +45,7 @@ result = (InputData(1) >>
 ```
 
 
-Now for dataframe manipulation. In `dplyr` many operations such as `mutate()` and `select()` look like function calls, but are applied to the intput as if they were functions, so I created a few mappings from equivalent pandas and 
+Now for dataframe manipulation. In `dplyr` many operations such as `mutate()` and `select()` look like function calls, but are applied to the intput as if they were functions, so I created a few mappings from equivalent pandas operations.
 
 ```
 # example dataframe
