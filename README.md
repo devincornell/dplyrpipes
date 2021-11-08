@@ -9,6 +9,8 @@ My solution requires you to pass your input data to the `InputData` constructor 
 This example shows how you can pass regular functions (including lambdas) to be applied to the input. I wrapped the expression in parentheses to look more like `dplyr` conventions.
 
 ```
+from dplyrpipes import component, InputData, out
+
 def myfunc1(x, y=1):
     return x * y
 
@@ -48,6 +50,8 @@ result = (InputData(1) >>
 Now for dataframe manipulation. In `dplyr` many operations such as `mutate()` and `select()` look like function calls, but are applied to the intput as if they were functions, so I created a few mappings from equivalent pandas operations.
 
 ```
+from dplyrpipes import mutate_df, filter_df, rename_df, select_df
+
 # example dataframe
 example_df = pd.DataFrame([
     {'name': 'Karl', 'age': 7}, 

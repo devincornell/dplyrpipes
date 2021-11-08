@@ -4,7 +4,8 @@ import pandas as pd
 import functools
 import statistics
 
-from dplyrpipes import component, InputData, mutate_df, filter_df, rename_df, select_df, out
+from dplyrpipes import component, InputData, out
+from dplyrpipes import mutate_df, filter_df, rename_df, select_df
 
 
 if __name__ == '__main__':
