@@ -6,4 +6,6 @@ def component(func):
         func.argdata = args
         func.kwargdata = kwargs
         return func
+        #return functools.partial(func, *args, **kwargs)
     return wrapper_component
+    #return functools.partial()

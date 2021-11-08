@@ -6,38 +6,67 @@ Two language differences were important to consider when writing this package: (
 
 My solution requires you to pass your input data to the `InputData` constructor which overloads the `>>` operator, so that, evaluated left-to-right, it will repeatedly apply functions on the right-hand side until it encounters `out()` object that will actually return your data.
 
-This example shows how you can pass a lambda function to modify the original data by adding one. I wrapped the expression in parentheses to look more like `dplyr` conventions.
+This example shows how you can pass regular functions (including lambdas) to be applied to the input. I wrapped the expression in parentheses to look more like `dplyr` conventions.
+
 ```
+def myfunc1(x, y=1):
+    return x * y
+
 result = (InputData(1) >> 
     (lambda x: x + 1) >> 
+    myfunc1 >>
     out()
 )
-# now result == 2
+# result == 2
 ```
 
 You can also use `functools.partial` to pass builtin functions with arguments, or even directly pass functions that require only the input as an argument.
 
 ```
-mylist = list(range(3))
-result = (InputData(mylist) >> 
-    (lambda l: l + [4]) >> 
-    functools.partial(filter, lambda x: x >= 2) >>
-    sum >>
+result = (InputData(1) >> 
+    functools.partial(myfunc1, y=2) >>
     out()
 )
+# result == 2
+```
+
+You can also use the `@component` decorator to wrap your function defintion so you don't need `functools.partial`. This allows you to pass functions that look like function calls with the expected parameters. In this example, see how a call to `myfunc2`, wrapped using the `@component` decorator, returns a function that accepts one argument and passes all other args and keyword arguments to the other parameters.
+
+```
+@component
+def myfunc2(x, y, z=1):
+    return x * y * z
+
+result = (InputData(1) >> 
+    myfunc2(3, z=2) >>
+    out()
+)
+# result == 12
 ```
 
 
-Now for dataframe manipulation. In `dplyr` many operations such as `mutate()` and `select()` look like regular functions, so I created the `@component` decorator to convert your custom functions into ones that return another function that accepts a single argument for the input data and other arguments to be passed when calling that function. It works very similar to For, example, observe the following function definition using the `@component` decorator:
+Now for dataframe manipulation. In `dplyr` many operations such as `mutate()` and `select()` look like function calls, but are applied to the intput as if they were functions, so I created a few mappings from equivalent pandas and 
+
 ```
-@dplyrpipes.component
-def mymethod(x, y, z=1):
-    return x * y + z
+# example dataframe
+example_df = pd.DataFrame([
+    {'name': 'Karl', 'age': 7}, 
+    {'name': 'Sandra', 'age': 10}, 
+    {'name': 'Chris', 'age': 20},
+    {'name': 'Andreas', 'age': 35},
+    {'name': 'Hong', 'age': 50},
+])
+
+# this shows some built-in methods that emulate behavior of dplyr methods
+df = (InputData(example_df) >> 
+    mutate_df(birthyear = 2021-example_df['age']) >>
+    filter_df('age >= 10') >>
+    select_df('name', 'birthyear') >>
+    rename_df({'birthyear': 'birth_year'}) >>
+    out()
+)
+print(df)
 ```
 
-In the modified function, the call `mymethod(10, z=2)` will return a function that looks like `newmethod(x, 10, z=2)`.
-
-I created the `@component` decorator to modify user functions to return a new new function which takes the first argument to be passed to the data and remaining.
-
-My solution requres wrapping your input data in the `InputData` class and using `>>` to pipe data 
+Obviously I didn't bother to translate all pandas to dplyr methods, but you can use a [translation guide like this one](https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_r.html) to write your own translations if you want.
 

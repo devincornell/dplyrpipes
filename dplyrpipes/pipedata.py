@@ -17,7 +17,6 @@ class InputData:
         '''
         if isinstance(func, out):
             return self.data
-
         if hasattr(func, 'argdata') and hasattr(func, 'kwargdata'):
             return self.__class__(func(self.data, *func.argdata, **func.kwargdata))
         else:

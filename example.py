@@ -4,20 +4,44 @@ import pandas as pd
 import functools
 import statistics
 
-from dplyrpipes import InputData, mutate_df, filter_df, rename_df, select_df, out
+from dplyrpipes import component, InputData, mutate_df, filter_df, rename_df, select_df, out
+
 
 if __name__ == '__main__':
 
+    def myfunc1(x, y=1):
+        return x * y
+    
     result = (InputData(1) >> 
         (lambda x: x + 1) >> 
+        myfunc1 >>
         out()
     )
+    assert(result == 2)
     print(result)
 
+    result = (InputData(1) >> 
+        functools.partial(myfunc1, y=2) >>
+        out()
+    )
+    assert(result == 2)
+    print(result)
+
+    @component
+    def myfunc2(x, y, z=1):
+        return x * y * z
+
+    result = (InputData(1) >> 
+        (lambda x: x + 1) >> 
+        myfunc2(3, z=2) >>
+        out()
+    )
+    assert(result == 12)
+    print(result)
+    
     mylist = list(range(3))
     result = (InputData(mylist) >> 
         (lambda l: l + [4]) >> 
-        functools.partial(filter, lambda x: x >= 2) >>
         sum >>
         out()
     )
@@ -40,15 +64,5 @@ if __name__ == '__main__':
         out()
     )
     print(df)
-
-    # this shows the pipes applied to normal functions
-    mylist = list(range(100))
-    summed = (InputData(mylist) >>
-        (lambda l: list(map(lambda x: x * 2, l))) >>
-        functools.partial(sorted, reverse=True) >>
-        functools.partial(filter, lambda x: x > 10) >>
-        statistics.median >>
-        out()
-    )
-    print(summed)
+    
 
