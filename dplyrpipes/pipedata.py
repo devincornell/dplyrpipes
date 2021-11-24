@@ -4,11 +4,11 @@ from typing import Callable, Any
 
 
 class out:
-    '''Ends the pipeline by returning the .data property of InputData.'''
+    '''Ends the pipeline by returning the .data property of PipeData.'''
     pass
 
 @dataclasses.dataclass
-class InputData:
+class PipeData:
     '''Store data and overload operator to apply component functions.'''
     data: Any
 

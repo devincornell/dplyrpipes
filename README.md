@@ -4,17 +4,17 @@ This package was built to emulate the behavior of dplyr by adding some syntactic
 
 Two language differences were important to consider when writing this package: (1) Python does not allow us to create new global operators - only define operator behavior relative to a given class; and (2) function calls cannot include variables that are not in-scope (like we see dplyr use in mutate or select functions), so they typically must be provided as strings.
 
-My solution requires you to pass your input data to the `InputData` constructor which overloads the `>>` operator, so that, evaluated left-to-right, it will repeatedly apply functions on the right-hand side until it encounters `out()` object that will actually return your data.
+My solution requires you to pass your input data to the `PipeData` constructor which overloads the `>>` operator, so that, evaluated left-to-right, it will repeatedly apply functions on the right-hand side until it encounters `out()` object that will actually return your data.
 
 This example shows how you can pass regular functions (including lambdas) to be applied to the input. I wrapped the expression in parentheses to look more like `dplyr` conventions.
 
 ```
-from dplyrpipes import component, InputData, out
+from dplyrpipes import component, PipeData, out
 
 def myfunc1(x, y=1):
     return x * y
 
-result = (InputData(1) >> 
+result = (PipeData(1) >> 
     (lambda x: x + 1) >> 
     myfunc1 >>
     out()
@@ -25,7 +25,7 @@ result = (InputData(1) >>
 You can also use `functools.partial` to pass builtin functions with arguments, or even directly pass functions that require only the input as an argument.
 
 ```
-result = (InputData(1) >> 
+result = (PipeData(1) >> 
     functools.partial(myfunc1, y=2) >>
     out()
 )
@@ -39,7 +39,7 @@ You can also use the `@component` decorator to wrap your function defintion so y
 def myfunc2(x, y, z=1):
     return x * y * z
 
-result = (InputData(1) >> 
+result = (PipeData(1) >> 
     myfunc2(3, z=2) >>
     out()
 )
@@ -62,7 +62,7 @@ example_df = pd.DataFrame([
 ])
 
 # this shows some built-in methods that emulate behavior of dplyr methods
-df = (InputData(example_df) >> 
+df = (PipeData(example_df) >> 
     mutate_df(birthyear = 2021-example_df['age']) >>
     filter_df('age >= 10') >>
     select_df('name', 'birthyear') >>

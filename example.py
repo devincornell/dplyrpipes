@@ -4,7 +4,7 @@ import pandas as pd
 import functools
 import statistics
 
-from dplyrpipes import component, InputData, out
+from dplyrpipes import component, PipeData, out
 from dplyrpipes import mutate_df, filter_df, rename_df, select_df
 
 
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     def myfunc1(x, y=1):
         return x * y
     
-    result = (InputData(1) >> 
+    result = (PipeData(1) >> 
         (lambda x: x + 1) >> 
         myfunc1 >>
         out()
@@ -21,7 +21,7 @@ if __name__ == '__main__':
     assert(result == 2)
     print(result)
 
-    result = (InputData(1) >> 
+    result = (PipeData(1) >> 
         functools.partial(myfunc1, y=2) >>
         out()
     )
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     def myfunc2(x, y, z=1):
         return x * y * z
 
-    result = (InputData(1) >> 
+    result = (PipeData(1) >> 
         (lambda x: x + 1) >> 
         myfunc2(3, z=2) >>
         out()
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     print(result)
     
     mylist = list(range(3))
-    result = (InputData(mylist) >> 
+    result = (PipeData(mylist) >> 
         (lambda l: l + [4]) >> 
         sum >>
         out()
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     ])
 
     # this shows some built-in methods that emulate behavior of dplyr methods
-    df = (InputData(example_df) >> 
+    df = (PipeData(example_df) >> 
         mutate_df(birthyear = 2021-example_df['age']) >>
         filter_df('age >= 10') >>
         select_df('name', 'birthyear') >>

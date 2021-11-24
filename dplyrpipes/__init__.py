@@ -1,3 +1,3 @@
 from .decorators import component
-from .pipedata import InputData, out
+from .pipedata import PipeData, out
 from .pandas_methods import *
