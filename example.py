@@ -49,11 +49,11 @@ if __name__ == '__main__':
     print(result)
     
     example_df = pd.DataFrame([
-        {'name': 'Karl', 'age': 7}, 
-        {'name': 'Sandra', 'age': 10}, 
-        {'name': 'Chris', 'age': 20},
-        {'name': 'Andreas', 'age': 35},
-        {'name': 'Hong', 'age': 50},
+        {'name': 'Karl', 'age': 7, 'gender': 'none'}, 
+        {'name': 'Sandra', 'age': 10, 'gender': 'male'}, 
+        {'name': 'Chris', 'age': 20, 'gender': 'female'},
+        {'name': 'Andreas', 'age': 35, 'gender': 'none'},
+        {'name': 'Hong', 'age': 50, 'gender': 'female'},
     ])
 
     # this shows some built-in methods that emulate behavior of dplyr methods
@@ -62,6 +62,17 @@ if __name__ == '__main__':
         filter_df('age >= 10') >>
         select_df('name', 'birthyear') >>
         rename_df({'birthyear': 'birth_year'}) >>
+        out()
+    )
+    print(df)
+
+    # and another example implementing a pandas method
+    @component
+    def count(df, *args, **kwargs):
+        return df.groupby(*args, **kwargs).size()
+
+    df = (PipeData(example_df) >>
+        count('gender') >>
         out()
     )
     print(df)

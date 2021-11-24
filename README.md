@@ -71,6 +71,38 @@ df = (PipeData(example_df) >>
 )
 print(df)
 ```
+Output:
+
+```
+      name  birthyear
+1   Sandra       2011
+2    Chris       2001
+3  Andreas       1986
+4     Hong       1971
+```
 
 Obviously I didn't bother to translate all pandas to dplyr methods, but you can use a [translation guide like this one](https://pandas.pydata.org/docs/getting_started/comparison/comparison_with_r.html) to write your own translations if you want.
+
+In this final example I implemented `dplyr`'s `count` function.
+
+```
+@component
+def count(df, *args, **kwargs):
+    return df.groupby(*args, **kwargs).size()
+
+df = (PipeData(example_df) >>
+    count('gender') >>
+    out()
+)
+print(df)
+```
+
+Output:
+```
+gender
+female    2
+male      1
+none      2
+dtype: int64
+```
 
